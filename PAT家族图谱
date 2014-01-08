@@ -1,0 +1,175 @@
+#include<iostream>
+#include<string>
+#include<map>
+#include<vector>
+
+using namespace std;
+//结构体的用法，命名，数组定义-》vector来装载  竟然还有一个用例没有通过，shit!
+typedef struct node
+{
+	string name;//字符数组的初始化有猫腻
+	int space;
+	node *father;
+};
+typedef struct node *Peoples;
+
+string judgeState(string nameA,string nameB,string key);
+
+string s;
+map<string,Peoples> phash;
+map<string,int> statekey;
+vector<string> result;
+int main()
+{
+	int n,m;
+	cin >> n >> m;
+	
+	vector<Peoples> men;
+	
+	vector<Peoples>::iterator iter;;
+	Peoples preman = new node();
+	int spaceNum;
+	getchar();//这一句还是很重要的，相当于一次回车
+	for(int i = 0;i < n;i++)
+	{
+		Peoples man = new node();
+		spaceNum = 0;
+		getline(cin,s);	
+		while(s[0] == ' ')
+		{
+			s = s.substr(1);
+			spaceNum ++;
+		}	
+		// 判断父亲是谁
+		if(spaceNum == 0)
+			man->father = NULL;
+		else
+			if(spaceNum - preman->space == 2)
+				man->father = preman;
+			else 
+				if(spaceNum - preman->space == 0)
+					man->father = preman->father;
+				else
+					if(spaceNum - preman->space == -2)
+						man->father = preman->father->father;		
+		man->name = s;
+		man->space = spaceNum;
+		men.push_back(man);
+		//记录当前节点的信息，留待下一个比较处理
+		phash[ s ] = man;
+		preman = man;
+		
+	}
+	/*for(iter = men.begin();iter != men.end();iter++)
+	{
+		cout<< (*iter)->name<<" " <<(*iter)->space<<" ";
+		if((*iter)->father != NULL)
+			cout<<(*iter)->father->name;
+		cout<<endl;
+
+	}*/
+	string state;
+	
+	for(int j = 0;j < m;j++)
+	{
+		getline(cin,state);
+		vector<string> states;
+		/*string::size_type pos;
+		for(int i = 0;i < state.size();i++)
+		{
+			pos = state.find(" ",i);*/
+		char temp[71];
+		strcpy(temp,state.c_str());
+		char *p;// 这里p 不能是string 
+		p = strtok(temp," ");
+		while(p)//这里不能是string的原因是，char数组最后一个是空字符为null,而string 是没有的
+		{
+			/*cout<<p<<endl;*/
+			states.push_back(p);
+			p = strtok(NULL," ");//先输出，因为最后一个是空的
+			
+		}
+		
+		//得到vector一共有6个字符串，第一个和第六个是名字，第四个是标示，用map 可实现
+		result.push_back(judgeState(states.at(0),states.at(5),states.at(3)));
+
+	}
+	vector<string>::iterator riter;
+		for(riter = result.begin();riter != result.end();riter++)
+			cout<<*riter<<endl;
+return 0;
+}
+//下面的代码应该还可以优化
+
+string judgeState(string nameA,string nameB,string key)
+{
+	int compkey = phash[nameA]->space - phash[nameB]->space;//find 是返回其迭代器
+	if(key == "child")
+	{
+		if(compkey == 2 && phash[nameA]->father == phash[nameB])
+			return "True";
+		else
+			return "False";
+	}
+	if(key == "parent")
+	{
+		if(compkey == -2 && phash[nameB]->father == phash[nameA])
+			return "True";
+		else
+			return "False";
+	}
+	if(key == "sibling")
+	{
+		if(compkey == 0 && phash[nameB]->father == phash[nameA]->father)
+			return "True";
+		else
+			return "False";
+	}
+	if(key == "descendant")
+	{
+		if(compkey >= 2)
+		{
+			Peoples temPerson = new node;
+			temPerson =phash[nameA]->father;
+			bool flag = true;
+			while(temPerson)
+			{
+				if(temPerson == phash[nameB])
+				{
+					flag = false;
+					return "True";
+					break;
+				}
+				temPerson = temPerson->father;
+			}
+			if(flag)
+				return "False";
+		}
+		else
+			return "False";
+	}
+	if(key == "ancestor")
+	{
+		if(compkey <= -2)
+		{
+			Peoples temPerson = new node;
+			temPerson =phash[nameB]->father;
+			bool flag = true;
+			while(temPerson)
+			{
+				if(temPerson == phash[nameA])
+				{
+					flag = false;
+					return "True";
+					break;
+				}
+				temPerson = temPerson->father;
+			}
+			if(flag)
+				return "False";
+		}
+		else
+			return "False";
+
+	}
+}
