@@ -1,0 +1,114 @@
+//未完成题目，适合于没有重复结点的目录输出
+#include<iostream>
+#include<string>
+#include<algorithm>
+#include<map>
+#include<vector>
+
+using namespace std;
+//字符串比较
+typedef struct node
+{
+	string s;
+	/*struct node *father;*/
+	string fatherS;
+	int dep;//标示层次的，
+};
+typedef struct node *Catalog;
+multimap<string,Catalog> hashCatalog;
+char line[261];
+int space = 0;//记录输出时前面的空格数
+
+void Tranverse(string fatherS);
+bool comp(string sA,string sB)
+{
+	return sA.compare(sB) > 0 ? true:false ;
+}
+	
+
+int main()
+{
+	int n;
+	string tempS;
+	vector<Catalog> cinData;
+
+	cin >> n;
+	for(int i = 0;i < n;i++)
+	{
+		
+		vector<string> strData;
+        cin>>tempS;	
+	    char *p;
+		strcpy(line,tempS.c_str());
+		p = strtok(line,"\\");//不错这个分割还不错
+		while(p)
+		{	
+			Catalog catalogs = new node();
+			catalogs->s = p;
+			if(strData.size() >= 1)
+				catalogs->fatherS = strData.back();
+			else
+				catalogs->fatherS = "root";
+			//这里要加一个判断，判断当前元素是否已经存在
+			strData.push_back(p);//此次循环中记录字符并提供父节点  find(hashCatalog.begin(),hashCatalog.end(),p);
+			multimap<string,Catalog>::iterator iterB,iterE;
+			iterB = hashCatalog.lower_bound(p);
+			iterE = hashCatalog.upper_bound(p);
+			bool flag = false;
+			while(iterB != iterE)
+			{
+				if((iterB->second->fatherS).compare(catalogs->fatherS)==0)
+					{
+						flag = true;
+						break;
+					}
+				++iterB;
+			}
+			if(flag)
+			{
+				p = strtok(NULL,"\\");
+				continue;
+			}
+			hashCatalog.insert(make_pair(p,catalogs));
+			p = strtok(NULL,"\\");
+			cinData.push_back(catalogs);//记录所有输入的节点		
+		}
+	}
+	//begin to print out
+	cout<<"root"<<endl;
+	Tranverse("root");
+
+
+	return 0;
+}
+
+
+void Tranverse(string fatherS)
+{
+	
+	vector<Catalog>::iterator iter;
+	multimap<string,Catalog>::const_iterator mapIter;
+	vector<string> temFa;
+	
+	for(mapIter = hashCatalog.begin();mapIter != hashCatalog.end();mapIter++)
+	{		
+		if(mapIter->second->fatherS == fatherS)
+			temFa.push_back(mapIter->first);
+	}
+	if(temFa.empty())
+		return;
+	
+	sort(temFa.begin(),temFa.end(),comp);//按字典顺序,因为vector只有pop_back,返回最后面一个元素，所以逆序，小的在最后面
+	while(!temFa.empty())
+	{
+		space += 2;
+		for(int j = 0;j < space;j++)
+			cout<<" ";
+		cout<<temFa.back()<<endl;
+		Tranverse(temFa.back());
+		temFa.pop_back();
+		space -=2;
+	}
+
+
+}
