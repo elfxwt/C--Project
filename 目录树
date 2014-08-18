@@ -1,0 +1,99 @@
+#include<iostream>
+#include<map>
+#include<string>
+#include<stack>
+#include<vector>
+using namespace std;
+
+struct Node
+{
+	string name;
+	map<string ,Node *> next;
+	Node(string s){name = s;};
+};
+void dicTree_insert(Node *root,string s);
+vector<Node*> splitSNode(string s);
+void printNode(Node *root,int level);
+// 输出没有考虑目录文件的情况
+/*
+思路：对节点再加个变量，区别目录和非目录的节点
+然后用unorder<map> 来做，输出排序时用sort进行排序，
+其中的cmp要重点写，依据变量是否为节点来排序
+
+*/
+int main()
+{
+	int n;
+	cin >> n;
+	string s;
+	Node *root = new Node("root");
+	Node *opNode = root;
+	while(n--)
+	{
+		cin>> s;
+		dicTree_insert(opNode,s);
+	}
+	cout<<"root"<<endl;
+	printNode(root,1);
+	return 0;
+
+}
+		
+void dicTree_insert(Node *root,string s)
+	{
+		vector<Node*> arrS = splitSNode(s);
+		for(int i =0;i < arrS.size();i++)
+		{
+			int flag = (root->next).count(arrS[i]->name);
+			if(flag <= 0)
+				(root->next).insert(pair<string,Node*>(arrS[i]->name,arrS[i]));	
+			root = (root->next)[arrS[i]->name];			
+		}
+
+     };
+
+vector<Node*> splitSNode(string s)
+{
+	vector<Node*> data;
+	while(s.length()> 0)
+		{
+			int pos = s.find("\\"); // 找不到的时候会成为-1
+			Node*temNode = new Node(s.substr(0,pos));
+			data.push_back(temNode);//(0,-1) 为全部
+			if(pos == -1)
+				break;
+			s = s.substr(pos+1);
+		}
+	return data;
+}
+
+void printNode(Node*root,int level)
+{
+	map<string,Node*> next = root->next;
+	map<string,Node*>:: iterator iter = next.begin(); 
+	for( ;iter != next.end();iter++)
+	{	
+		for(int i = 0;i < level * 2;i++)
+			cout<<" ";	
+			cout<<iter->first<<endl;
+		printNode(iter->second,level+1);
+	}
+}
+
+参考cmp的方法：
+bool cmp(Node* t1, Node* t2)  
+{  
+    if((t1->mulu == true && t2->mulu == true) ||  
+       (t1->mulu == false && t2->mulu == false))  
+    {  
+        if((t1->name).compare(t2->name) < 0)  
+            return true;  
+        else  
+            return false;  
+    }  
+    else  
+        if(t1->mulu == true)  
+            return true;  
+        else  
+            return false;  
+}
