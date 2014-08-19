@@ -19,7 +19,7 @@ void printNode(Node *root,int level);
 思路：对节点再加个变量，区别目录和非目录的节点
 然后用unorder<map> 来做，输出排序时用sort进行排序，
 其中的cmp要重点写，依据变量是否为节点来排序
-
+思路2：建立两个map 进行，一个是目录map ,一个是文件map,单独来做，只是在split的时候要区分一下
 */
 int main()
 {
