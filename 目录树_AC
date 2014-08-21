@@ -1,0 +1,111 @@
+#include<iostream>
+#include<map>
+#include<unordered_map>
+#include<string>
+#include<stack>
+#include<vector>
+#include<algorithm>
+
+
+
+using namespace std;
+
+struct Node
+{
+	string name;
+    bool file;
+	vector <Node*> next;
+	Node(string s){name = s;file = false;};
+};
+void dicTree_insert(Node *root,string s);
+vector<Node*> splitSNode(string s);
+void printNode(Node *root,int level);
+
+
+int main()
+{
+	int n;
+	cin >> n;
+	string s;
+	Node *root = new Node("root");
+	Node *opNode = root;
+	while(n--)
+	{
+		cin>> s;
+		dicTree_insert(opNode,s);
+	}
+	cout<<"root"<<endl;
+	
+	printNode(root,1);
+	return 0;
+}
+void dicTree_insert(Node *root,string s)
+	{
+		vector<Node*> arrS = splitSNode(s);
+		vector<Node*>::iterator iter;
+		bool tag = true;
+		for(int i =0;i < arrS.size();i++)
+		{
+			// iter = find((root->next).begin(),(root->next).end(),arrS[i]);// 这个会不会有问题，去找node,不行的话还要走个循环name,终究不行
+			for(int j = 0;j < (root->next).size();j++)
+			if(((root->next)[j])->name == (arrS[i])->name)
+				{
+					root = (root->next)[j];
+					tag = false;
+					break;
+				}
+				if(tag )
+				{
+					(root->next).push_back(arrS[i]);
+					root =*( (root->next).rbegin());		
+				}
+				tag = true; //上一次可能会影响下一次的结果
+				
+		}
+
+     };
+
+vector<Node*> splitSNode(string s) // split 成结点是有好处的
+{
+	vector<Node*> data;
+	string temp = s;
+	while(temp.length()> 0)
+		{
+			int pos = temp.find("\\"); // 找不到的时候会成为-1
+			Node*temNode = new Node(temp.substr(0,pos));
+			data.push_back(temNode);//(0,-1) 为全部
+			if(pos == -1)
+				break;
+			temp = temp.substr(pos+1);
+		}
+	if(s[s.length() - 1] != '\\') // 最后一个通常应该是true,但是个别的有斜杠的，不需要变动
+		(*(data.rbegin()))->file = true;
+	return data;
+}
+
+bool cmp(Node *node1,Node* node2)   // 自定义的sort还是比较好用的，要学会cmp的写法
+{
+	if(((node1)->file == true && node2 ->file == true)||
+		(node1->file == false && node2->file == false))
+		return (node1->name).compare(node2->name)<0 ? true:false; // 这样才是递增的。
+	else
+		if(node1->file == false)
+			return true;
+		else
+			return false;
+
+}
+
+void printNode(Node*root,int level)
+{
+	
+	for(int j = 0;j < (root->next).size();j++) // 用指针迭代会出问题，排序一定要用下标来访问
+	{
+		sort((root->next).begin(),(root->next).end(),cmp);
+		for(int i = 0;i < level * 2;i++)	
+			cout<<" ";	
+			cout<<(root->next)[j]->name <<endl;
+			printNode((root->next)[j],level+1);
+	}
+}
+
