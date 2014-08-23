@@ -1,0 +1,57 @@
+#include<iostream>
+#include<map>
+#include<unordered_map>
+#include<string>
+#include<stack>
+#include<vector>
+#include<algorithm>
+#include<set>
+using namespace std;
+
+
+// 浪费了很多时间！！要死啊！ 这么简单的题目！！
+//思路很快想好了，但是set结构不熟练，所以导致一直出错，然后就 一些细节问题
+int main()
+{
+	int k;
+	cin >> k;
+	set<int> data;
+	set<int> result;
+	vector<int> r;
+	while(k--)
+	{
+		int temp;
+		cin>> temp;
+		data.insert(temp);
+		int mid = temp;
+		while(mid > 1) // 如果找到了返回1，找不到返回0
+		{		
+			if(mid % 2 == 0)
+				mid /= 2;
+			else
+				mid = (3 * mid + 1) / 2;	
+			if( result.count(mid) != 0)
+				break;
+			result.insert(mid);
+		}
+	}  // 可以暂且不考虑优化的问题
+	set<int>::reverse_iterator iter;
+	bool flag = true;
+	for(iter = data.rbegin();iter != data.rend();iter++) // 用指针迭代的时候慎用 erase!!
+		if( result.count(*iter) == 0)
+			r.push_back(*iter);
+	
+	for( int i = 0;i < r.size();i++)
+	{
+		if(flag)
+			flag = false;
+		else
+			cout<<" ";
+		cout<<r[i];
+	}
+
+}
+		
+	 
+
+	
