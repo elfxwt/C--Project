@@ -1,0 +1,61 @@
+#include<iostream>
+#include<map>
+#include<unordered_map>
+#include<string>
+#include<stack>
+#include<vector>
+#include<algorithm>
+#include<set>
+using namespace std;
+int num = 4;
+
+int main()
+{
+
+	string s[4];
+	while(num--)
+		cin>>s[num];
+	map<char,int> data;
+	string weekmap[7] = {"MON","TUE","WED","THU","FRI","SAT","SUN"};
+	vector<string> result;
+	for(int i = 0;i < 24;i++)
+	{
+		if(i < 10)
+			data['0' + i] = i;
+		else
+			data['A'+(i - 10)] = i ;
+	}
+	char week,hour;
+	int minute = 0;
+	bool flag = true;
+	for(int i =0;i < s[3].length();i++)
+	{
+		if(s[3][i] == s[2][i])
+		{
+			if( s[3][i] >= 'A'&& s[3][i] <='G')
+				week = s[3][i];
+			else
+				if( s[3][i] >= 'A'&& s[2][i] <='N' || s[3][i] >= '0'&& s[2][i] <='9' )
+					hour = s[3][i];
+		}
+		
+	}
+	for(int i =0;i < s[1].length();i++)
+	{
+		if(s[0][i] == s[1][i]&& isalpha(s[0][i]))
+		{
+			minute = i;
+			break;
+		}
+	}
+	int weekNum = week - 'A'; //  week - 'A' > 7?( week - 'a') : (week - 'A')  就是A~G之间
+	cout<<weekmap[weekNum]<<" "<<data[hour]<<":";
+	/*if(minute < 10)
+		cout<<"0"<<minute;
+	else
+		cout<<minute;*/
+	cout<< minute / 10 <<minute% 10; // 个位和十位，这样不要单独除以0
+
+	return 0;
+
+}
