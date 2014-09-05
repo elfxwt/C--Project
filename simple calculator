@@ -1,0 +1,68 @@
+int manage(int a,char op,int b)
+{
+	int result = 0;
+	switch(op)
+	{
+		case '+':
+			result = a + b;
+			break;
+		case '-':
+			result = a - b;
+			break;
+		case '*':
+			result = a*b;
+			break;
+		case '/':
+			result = a/b;
+			break;
+	}
+	return result;
+}
+
+
+void calculor()
+{
+    string s;
+	cin >> s;
+	vector<int> data;
+	vector<char> operar;
+	string t;
+	for(int i =0;i < s.length()-1;i++)
+	{
+		if(isdigit(s[i]))
+		    t+= s[i];	
+		else
+		{
+			data.push_back(atoi(const_cast<char *>(t.c_str())));
+			t = "";
+			operar.push_back(s[i]);
+		}
+	}
+	if(t != "") // 这里给忘记了。。
+			data.push_back(atoi(const_cast<char *>(t.c_str()))); // 最后一个数字
+	int first = data[0];
+	for(int j = 1;j < data.size();j++)
+	     first = manage(first,operar[j-1],data[j]);
+	cout<<first<<endl;
+	return 0;
+}
+
+	
+
+
+int parse(char t)
+{
+	switch (t)
+	{
+	case 'C':
+		return 1;
+	case 'B':
+		return 0;
+	case 'J':
+		return 2;
+	}
+
+
+
+
+}
